@@ -5,7 +5,7 @@
 //mqtt
 #define Mqtt_User "mqtt"
 #define Mqtt_Pswd "mqttpass"
-#define Module_Name "LightTest"
+#define Module_Name "Light"
 #define Mqtt_Base_Topic Module_Name
 #define Mqtt_IP_Topic Mqtt_Base_Topic "/IP/"
 //#define MQTT_JSON_RELAY_STATE_TOPIC Mqtt_Base_Topic "/relay/json_status"
@@ -40,7 +40,7 @@ void callback_mqtt(char* topic, byte* payload, unsigned int length) {
   Serial.println();
   // Serial.println(length);
   String topicStr(topic); // получили топик
-  
+
   uint8_t indexR = RELAY_NUM + 1; // найденный номер реле
 
   if (topicStr.indexOf("/r") >= 0) {
@@ -67,7 +67,7 @@ void callback_mqtt(char* topic, byte* payload, unsigned int length) {
         else if (length == 3) { //если в нагрузке 3 символа
           if (((char)payload[1] == 'F') && ((char)payload[2] == 'F')) {
             Serial.println("Выключаем");
-             TargetRelay[indexR - 1]  = 0;
+            TargetRelay[indexR - 1]  = 0;
           }
         }
 
@@ -207,6 +207,8 @@ void publishRelayState() {
     StatusRelay[i] ? strcpy(sub_pload, "ON") : strcpy(sub_pload, "OFF"); //заполняем нагрузку значением
 
     client.publish(sub_topic, sub_pload, true); //публикуем статус
+    delete sub_topic; // освобождение памяти
+    delete sub_pload; // освобождение памяти
   } //for
 }
 
@@ -219,14 +221,15 @@ void publishRelayNumState( uint8_t rnum) {
   strcat(sub_topic, "/"); // добавляем к топику продолжение
   strcat(sub_topic, strRelay[rnum]);
   strcat(sub_topic, "/status");
- // Serial.println(sub_topic);
+  // Serial.println(sub_topic);
   //создаём нагрузку для топика
   uint8_t len_pload = StatusRelay[rnum] ? strlen("ON") : strlen("OFF"); // считаем длину
   char* sub_pload  = new char [len_pload + 1]; // объявляем указатель на нагрузку
   StatusRelay[rnum] ? strcpy(sub_pload, "ON") : strcpy(sub_pload, "OFF"); //заполняем нагрузку значением
 
   client.publish(sub_topic, sub_pload, true); //публикуем статус
-
+  delete sub_topic; // освобождение памяти
+  delete sub_pload; // освобождение памяти
 }
 
 void publishESPJsonState() {
@@ -259,23 +262,23 @@ void publishPcfJsonState() {
 
 void publishSwitchJsonState(uint8_t i, const char* stat) {
   /*StaticJsonDocument<64> root;
-  root[strSwitch[i]] = stat;
+    root[strSwitch[i]] = stat;
 
-  char buffer[measureJson(root) + 1];
-  serializeJson(root, buffer, sizeof(buffer));
-*/
- // объявляем топик с нужной длиной символов
+    char buffer[measureJson(root) + 1];
+    serializeJson(root, buffer, sizeof(buffer));
+  */
+  // объявляем топик с нужной длиной символов
   char* sub_topic  = new char [strlen(Mqtt_Base_Topic) + strlen("/") + strlen(strSwitch[i]) + strlen("/status") + 1];
   strcpy( sub_topic , Mqtt_Base_Topic); // копируем в строку топика начало
   strcat(sub_topic, "/"); // добавляем к топику продолжение
   strcat(sub_topic, strSwitch[i]);
   strcat(sub_topic, "/status");
-//  Serial.println(sub_topic);
+  //  Serial.println(sub_topic);
 
 
 
   client.publish(sub_topic, stat, true);
-
+  delete sub_topic; // освобождение памяти
 }
 
 
@@ -303,7 +306,7 @@ boolean reconnectMQTT() {
       strcat(sub_topic, "/"); // добавляем к топику продолжение
       strcat(sub_topic, strRelay[i]);
       strcat(sub_topic, "/set");
-    //  Serial.println(sub_topic);
+      //  Serial.println(sub_topic);
       client.subscribe(sub_topic);
     } //for
 
@@ -342,6 +345,9 @@ void loop_mqtt() {
   unsigned long now = millis();
   if (now - last_publish_ms > 60000) {
     last_publish_ms = now;
+
+  /*  Serial.print("Куча: ");
+    Serial.println(ESP.getFreeHeap()); */
 
     publishRelayState();
     publishESPJsonState();

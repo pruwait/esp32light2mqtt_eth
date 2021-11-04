@@ -229,15 +229,7 @@ void setup_pcf () {
   pinMode(ESP32_INTERRUPTED_PIN3, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(ESP32_INTERRUPTED_PIN3), keyChangedOnPCF3, FALLING);
 
-  // Устанавливаем pinMode расширителей
-  /*
-    for (uint8_t i = 0; i < 16; i++) {
-    in1.pinMode(i, INPUT);
-    in2.pinMode(i, INPUT);
-    out1.pinMode(i, OUTPUT);
-    out2.pinMode(i, OUTPUT);
-    }
-  */
+  
   // выключаем свет
   out1.write16(0xFFFF);
   out2.write16(0xFFFF);
@@ -247,23 +239,7 @@ void setup_pcf () {
 
 }
 
-/*
-void loop_pcf () {
 
-  uint32_t now = millis();
-    if (keyChanged1)
-    {
-     keyChanged1 = false;
-     uint16_t x = in1.readButton16();
-     Serial.print("READ But16:\t");
-     Serial.print('\t');
-     Serial.print(now);
-     Serial.print('\t');
-     Serial.println(x, BIN);
-    }
-  
-}
-*/
 
 
 

@@ -20,10 +20,11 @@
 
 #include <ETH.h>
 
-//для OTA
+#ifdef ota
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <AsyncElegantOTA.h>
+#endif
 
 WiFiClient ethClient; //в библиотеке ETH.h он так называется!
 
@@ -58,9 +59,10 @@ WiFiClient ethClient; //в библиотеке ETH.h он так называе
 static bool eth_connected = false;
 unsigned long timeElapsed;
 
+#ifdef ota
 //для OTA
 AsyncWebServer serverHTTP(80); 
-
+#endif
 
 void WiFiEvent(WiFiEvent_t event) {
   switch (event) {
@@ -84,6 +86,8 @@ void WiFiEvent(WiFiEvent_t event) {
       Serial.print(ETH.linkSpeed());
       Serial.println("Mbps");
       eth_connected = true;
+      
+      #ifdef ota
       // webserver
       serverHTTP.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
       request->send(200, "text/plain", "Hi! I am ESP32. For OTA go to http://<IPAddress>/update in browser.");
@@ -92,6 +96,7 @@ void WiFiEvent(WiFiEvent_t event) {
       AsyncElegantOTA.begin(&serverHTTP);    // Start ElegantOTA
       serverHTTP.begin();
       Serial.println("HTTP server started");
+      #endif
       
       break;
     case SYSTEM_EVENT_ETH_DISCONNECTED:
