@@ -40,7 +40,7 @@ ESP32 MQTT Light control
    
    
 
-
+````
     Схема обмена данными:
     
                         ___________
@@ -48,6 +48,6 @@ ESP32 MQTT Light control
                        | Статусы   |
                        | Реле      | -> Сравниваем с текущими -> Digital Outputs
      Digital INs  ->   |___________|
-     
+````     
      
 
