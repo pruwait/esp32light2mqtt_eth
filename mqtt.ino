@@ -308,6 +308,7 @@ boolean reconnectMQTT() {
       strcat(sub_topic, "/set");
       //  Serial.println(sub_topic);
       client.subscribe(sub_topic);
+      delete sub_topic; // освобождение памяти
     } //for
 
 
