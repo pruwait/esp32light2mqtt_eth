@@ -206,7 +206,7 @@ void publishRelayState() {
     char* sub_pload  = new char [len_pload + 1]; // объявляем указатель на нагрузку
     StatusRelay[i] ? strcpy(sub_pload, "ON") : strcpy(sub_pload, "OFF"); //заполняем нагрузку значением
 
-    client.publish(sub_topic, sub_pload, true); //публикуем статус
+    client.publish(sub_topic, sub_pload, false); //публикуем статус
     delete sub_topic; // освобождение памяти
     delete sub_pload; // освобождение памяти
   } //for
@@ -227,7 +227,7 @@ void publishRelayNumState( uint8_t rnum) {
   char* sub_pload  = new char [len_pload + 1]; // объявляем указатель на нагрузку
   StatusRelay[rnum] ? strcpy(sub_pload, "ON") : strcpy(sub_pload, "OFF"); //заполняем нагрузку значением
 
-  client.publish(sub_topic, sub_pload, true); //публикуем статус
+  client.publish(sub_topic, sub_pload, false); //публикуем статус
   delete sub_topic; // освобождение памяти
   delete sub_pload; // освобождение памяти
 }
@@ -239,7 +239,7 @@ void publishESPJsonState() {
   char buffer[measureJson(root) + 1];
   serializeJson(root, buffer, sizeof(buffer));
 
-  client.publish(MQTT_ESP_STATE, buffer, true);
+  client.publish(MQTT_ESP_STATE, buffer, false);
 
 }
 
@@ -277,7 +277,7 @@ void publishSwitchJsonState(uint8_t i, const char* stat) {
 
 
 
-  client.publish(sub_topic, stat, true);
+  client.publish(sub_topic, stat, false);
   delete sub_topic; // освобождение памяти
 }
 
@@ -291,7 +291,7 @@ boolean reconnectMQTT() {
     // Once connected, publish an announcement...
     Serial.println("MQTT подключен");
 
-    client.publish(MQTT_UP, MQTT_UP_online, true);
+    client.publish(MQTT_UP, MQTT_UP_online, false);
     publishRelayState();
     publishPcfJsonState();
     // ... and resubscribe
